@@ -1107,7 +1107,7 @@ function pages:openpage()
 	end
 end
 --
-function pages:section(props)
+function sections:section(props)
     -- // properties
     local name = props.name or props.Name or props.page or props.Page or props.pagename or props.Pagename or props.PageName or props.pageName or "new ui"
     local side = props.side or props.Side or props.sectionside or props.Sectionside or props.SectionSide or props.sectionSide or "left"
@@ -1130,31 +1130,30 @@ function pages:section(props)
         }
     )
     
-    -- Main container with scroll
-    local scrollContainer = utility.new(
+    -- Create a scrolling frame
+    local scrollFrame = utility.new(
         "ScrollingFrame",
         {
-            AnchorPoint = Vector2.new(0.5, 0.5),
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
-            Size = UDim2.new(1, -10, 1, -25),
-            Position = UDim2.new(0.5, 0, 0.5, 0),
+            Size = UDim2.new(1, 0, 1, -25), -- Leave space for title
+            Position = UDim2.new(0, 0, 0, 25),
             ScrollBarThickness = 5,
             ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100),
             ScrollBarImageTransparency = 0.5,
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            ClipsDescendants = true, -- Prevent content from overflowing
+            CanvasSize = UDim2.new(0, 0, 0, 0), -- Will be updated automatically
+            ClipsDescendants = true,
             Parent = sectionholder
         }
     )
     
-    -- Content frame that will grow
+    -- Content frame that will hold all the elements
     local content = utility.new(
         "Frame",
         {
             BackgroundTransparency = 1,
-            Size = UDim2.new(1, 0, 0, 0),
-            Parent = scrollContainer
+            Size = UDim2.new(1, 0, 0, 0), -- Height will be updated
+            Parent = scrollFrame
         }
     )
     
@@ -1177,7 +1176,7 @@ function pages:section(props)
             end
         end
         content.Size = UDim2.new(1, 0, 0, totalHeight)
-        scrollContainer.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+        scrollFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
     end
     
     -- Connect to child added/removed events
@@ -1225,7 +1224,7 @@ function pages:section(props)
         ["sectionholder"] = sectionholder,
         ["color"] = color,
         ["content"] = content, -- Points to the content frame inside the scrolling frame
-        ["scrollContainer"] = scrollContainer, -- Reference to the scrolling frame
+        ["scrollFrame"] = scrollFrame, -- Reference to the scrolling frame
         ["pointers"] = {}
     }
     
