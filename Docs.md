@@ -2,7 +2,7 @@
 
 ### Initialization
 ```lua
-local library = loadstring(game:HttpGet("YOUR_SCRIPT_URL"))()
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/hillsTools/Blox.lol-ui/refs/heads/main/lua.lua"))()
 ```
 
 ### Window Creation
@@ -270,7 +270,7 @@ window:loadconfig("config.cfg")
 ## Complete Example
 
 ```lua
-local library = loadstring(game:HttpGet("YOUR_SCRIPT_URL"))()
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/hillsTools/Blox.lol-ui/refs/heads/main/lua.lua"))()
 
 -- Create window
 local window = library:new({
