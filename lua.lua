@@ -1113,8 +1113,10 @@ function pages:section(props)
     local side = props.side or props.Side or props.sectionside or props.Sectionside or props.SectionSide or props.sectionSide or "left"
     local size = props.size or props.Size or props.yaxis or props.yAxis or props.YAxis or props.Yaxis or 200
     side = side:lower()
+    
     -- // variables
     local section = {}
+    
     -- // main
     local sectionholder = utility.new(
         "Frame",
@@ -1123,90 +1125,50 @@ function pages:section(props)
             BorderColor3 = Color3.fromRGB(56, 56, 56),
             BorderMode = "Inset",
             BorderSizePixel = 1,
-            Size = UDim2.new(1,0,0,size),
+            Size = UDim2.new(1, 0, 0, size),
             Parent = self[side]
         }
     )
     
-    local outline = utility.new(
-        "Frame",
+    -- Main container with scroll
+    local scrollContainer = utility.new(
+        "ScrollingFrame",
         {
-            BackgroundColor3 = Color3.fromRGB(24, 24, 24),
-            BorderColor3 = Color3.fromRGB(12, 12, 12),
-            BorderMode = "Inset",
-            BorderSizePixel = 1,
-            Size = UDim2.new(1,0,1,0),
+            AnchorPoint = Vector2.new(0.5, 0.5),
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            Size = UDim2.new(1, -10, 1, -25),
+            Position = UDim2.new(0.5, 0, 0.5, 0),
+            ScrollBarThickness = 5,
+            ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100),
+            ScrollBarImageTransparency = 0.5,
+            CanvasSize = UDim2.new(0, 0, 0, 0),
+            ClipsDescendants = true, -- Prevent content from overflowing
             Parent = sectionholder
         }
     )
     
-    local color = utility.new(
-        "Frame",
-        {
-            AnchorPoint = Vector2.new(0.5,0),
-            BackgroundColor3 = self.library.theme.accent,
-            BorderSizePixel = 0,
-            Size = UDim2.new(1,-2,0,1),
-            Position = UDim2.new(0.5,0,0,0),
-            Parent = outline
-        }
-    )
-    
-    table.insert(self.library.themeitems["accent"]["BackgroundColor3"],color)
-    
-    -- Create the scrolling frame container
-    local scrollContainer = utility.new(
-        "ScrollingFrame",
-        {
-            AnchorPoint = Vector2.new(0.5,1),
-            BackgroundTransparency = 1,
-            BorderSizePixel = 0,
-            Size = UDim2.new(1,-12,1,-25),
-            Position = UDim2.new(0.5,0,1,-5),
-            ScrollBarThickness = 5,
-            ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100),
-            ScrollBarImageTransparency = 0.5,
-            CanvasSize = UDim2.new(0,0,0,0),
-            Parent = outline
-        }
-    )
-    
-    -- Create the content frame inside the scrolling frame
+    -- Content frame that will grow
     local content = utility.new(
         "Frame",
         {
             BackgroundTransparency = 1,
-            Size = UDim2.new(1,0,0,0),
+            Size = UDim2.new(1, 0, 0, 0),
             Parent = scrollContainer
         }
     )
     
-    local title = utility.new(
-        "TextLabel",
-        {
-            BackgroundTransparency = 1,
-            Size = UDim2.new(1,-5,0,20),
-            Position = UDim2.new(0,5,0,0),
-            Font = self.library.font,
-            Text = name,
-            TextColor3 = Color3.fromRGB(255,255,255),
-            TextSize = self.library.textsize,
-            TextStrokeTransparency = 0,
-            TextXAlignment = "Left",
-            Parent = outline
-        }
-    )
-    
+    -- Layout for content
     local listLayout = utility.new(
         "UIListLayout",
         {
             FillDirection = "Vertical",
-            Padding = UDim.new(0,5),
+            Padding = UDim.new(0, 5),
             Parent = content
         }
     )
     
-    -- Function to update the canvas size
+    -- Function to update canvas size
     local function updateCanvasSize()
         local totalHeight = 0
         for _, child in ipairs(content:GetChildren()) do
@@ -1223,9 +1185,39 @@ function pages:section(props)
     content.ChildRemoved:Connect(updateCanvasSize)
     
     -- Initial update
-    listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        updateCanvasSize()
-    end)
+    listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvasSize)
+    
+    -- Section title
+    local title = utility.new(
+        "TextLabel",
+        {
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, -5, 0, 20),
+            Position = UDim2.new(0, 5, 0, 0),
+            Font = self.library.font,
+            Text = name,
+            TextColor3 = Color3.fromRGB(255, 255, 255),
+            TextSize = self.library.textsize,
+            TextStrokeTransparency = 0,
+            TextXAlignment = "Left",
+            Parent = sectionholder
+        }
+    )
+    
+    -- Accent color bar
+    local color = utility.new(
+        "Frame",
+        {
+            AnchorPoint = Vector2.new(0.5, 0),
+            BackgroundColor3 = self.library.theme.accent,
+            BorderSizePixel = 0,
+            Size = UDim2.new(1, -2, 0, 1),
+            Position = UDim2.new(0.5, 0, 0, 0),
+            Parent = sectionholder
+        }
+    )
+    
+    table.insert(self.library.themeitems["accent"]["BackgroundColor3"], color)
     
     -- // section tbl
     section = {
@@ -1245,7 +1237,8 @@ function pages:section(props)
         end
     end
     
-    self.library.labels[#self.library.labels+1] = title
+    self.library.labels[#self.library.labels + 1] = title
+    
     -- // metatable indexing + return
     setmetatable(section, sections)
     return section
