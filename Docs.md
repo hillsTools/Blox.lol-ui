@@ -2,7 +2,7 @@
 
 ## Loading the Library
 ```lua
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/AceDev21/BloxUi/refs/heads/main/BloxUi.lua"))()
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/hillsTools/Blox.lol-ui/refs/heads/main/lua"))()
 ```
 
 ## Creating a Window
